@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Simple Node Chat App with Socket.IO</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <div class="container my-5">
+      <div class="row">
+        <div class="col-sm-12">
+          <h1>Simple Node Chat App with Socket.IO</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="mb-3">Write</h5>
+              <input id="name" class="mb-3 form-control" type="text" placeholder="Name" />
+              <textarea id="message" class="mb-3 form-control" placeholder="Message"></textarea>
+              <button id="send" class="btn btn-success">Send</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="mb-3">Chat</h5>
+              <div id="messages">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+  <script>
+    $(() => {
+      getMessages();
+      $("#send").click(() => {
+        const message = {
+          name: $("#name").val(),
+          message: $("#message").val()
+        }
+        postMessage(message);
+      });
+    });
+    function addMessage({name, message}) {
+      $("#messages").append(`<h5>${name}</h5><p>${message}</p>`);
+    }
+    function getMessages() {
+      $.get("http://localhost:4000/messages", messages => {
+        messages.forEach(addMessage);
+      });
+    }
+    function postMessage(message) {
+      $.post('http://localhost:4000/message', message);
+    }
+    const socket = io()
+    socket.on('message', addMessage);
+  </script>
+</html>
